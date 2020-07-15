@@ -29,6 +29,40 @@ namespace TrelluraSimples.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy("CorsPolicy",
+            //        builder => builder.AllowAnyOrigin()
+            //        .AllowAnyMethod()
+            //        .AllowAnyHeader());
+            //});
+
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy("CorsPolicy",
+            //        builder => builder.AllowAnyOrigin()
+            //            .AllowAnyMethod()
+            //            .AllowAnyHeader());
+            //});
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllCors", builder =>
+                {
+                    builder
+
+                    .WithOrigins("https://localhost:3000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .SetIsOriginAllowed(delegate (string requestingOrigin)
+                    {
+                        return true;
+                    }).Build();
+                });
+            });
+
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -49,7 +83,12 @@ namespace TrelluraSimples.API
 
             app.UseRouting();
 
-            app.UseAuthorization();
+
+
+            //app.UseAuthorization();
+
+            app.UseCors("AllowAllCors");
+
 
             app.UseEndpoints(endpoints =>
             {
